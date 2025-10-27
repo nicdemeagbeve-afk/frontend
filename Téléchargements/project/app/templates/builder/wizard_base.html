@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Créer un site - MiabeSite{% endblock %}
+
+{% block content %}
+<div class="builder-container min-vh-100">
+    <!-- Wizard Navigation -->
+    <div class="wizard-nav mb-4 bg-white shadow-sm sticky-top">
+        <div class="container-fluid px-4">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-link text-muted px-0">
+                        <i class="bi bi-arrow-left me-2"></i>Retour
+                    </a>
+                </div>
+                <div class="col">
+                    <div class="d-flex justify-content-center">
+                        <div class="wizard-steps d-flex gap-4">
+                            <div class="step text-center">
+                                <div class="step-icon {{ 'bg-primary text-white shadow-custom' if step >= 1 else 'bg-gray-100' }} rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                    <i class="bi bi-layout-wtf fs-5"></i>
+                                </div>
+                                <div class="mt-2">
+                                    <span class="d-block fw-bold {{ 'text-primary' if step == 1 else '' }}">Modèle</span>
+                                    <small class="text-muted">Choisir un template</small>
+                                </div>
+                            </div>
+                            
+                            <div class="step text-center position-relative">
+                                <div class="step-connector"></div>
+                                <div class="step-icon {{ 'bg-primary text-white shadow-custom' if step >= 2 else 'bg-gray-100' }} rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                    <i class="bi bi-pencil-square fs-5"></i>
+                                </div>
+                                <div class="mt-2">
+                                    <span class="d-block fw-bold {{ 'text-primary' if step == 2 else '' }}">Contenu</span>
+                                    <small class="text-muted">Personnaliser</small>
+                                </div>
+                            </div>
+                            
+                            <div class="step text-center position-relative">
+                                <div class="step-connector"></div>
+                                <div class="step-icon {{ 'bg-primary text-white shadow-custom' if step >= 3 else 'bg-gray-100' }} rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                    <i class="bi bi-palette fs-5"></i>
+                                </div>
+                                <div class="mt-2">
+                                    <span class="d-block fw-bold {{ 'text-primary' if step == 3 else '' }}">Style</span>
+                                    <small class="text-muted">Design & couleurs</small>
+                                </div>
+                            </div>
+                            
+                            <div class="step text-center position-relative">
+                                <div class="step-connector"></div>
+                                <div class="step-icon {{ 'bg-primary text-white shadow-custom' if step >= 4 else 'bg-gray-100' }} rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                    <i class="bi bi-rocket fs-5"></i>
+                                </div>
+                                <div class="mt-2">
+                                    <span class="d-block fw-bold {{ 'text-primary' if step == 4 else '' }}">Publication</span>
+                                    <small class="text-muted">Mettre en ligne</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="progress" style="width: 100px; height: 8px;">
+                        <div class="progress-bar" role="progressbar" style="width: {{ (step / 4 * 100)|round }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Wizard Content -->
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                {% block wizard_content %}
+                <!-- Le contenu spécifique à chaque étape va ici -->
+                {% endblock %}
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="row justify-content-center mt-4">
+            <div class="col-lg-10">
+                <div class="d-flex justify-content-between">
+                    {% if step > 1 %}
+                        {% if site %}
+                        <a href="{{ url_for('builder.' + ['step1_template', 'step2_content', 'step3_style'][step-2], site_id=site.id) }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Précédent
+                        </a>
+                        {% else %}
+                        <button class="btn btn-outline-secondary" onclick="history.back()">
+                            <i class="bi bi-arrow-left me-2"></i>Précédent
+                        </button>
+                        {% endif %}
+                    {% else %}
+                        <div></div>
+                    {% endif %}
+                    
+                    {% if step < 4 %}
+                        {% if site %}
+                        <a href="{{ url_for('builder.' + ['step2_content', 'step3_style', 'step4_publish'][step-1], site_id=site.id) }}" class="btn btn-primary wizard-next">
+                            Suivant<i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                        {% else %}
+                        <button class="btn btn-primary" id="continue-without-site" disabled>
+                            Suivant<i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                        <script>
+                            // Activer le bouton suivant seulement si un template est sélectionné
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const continueBtn = document.getElementById('continue-without-site');
+                                const templateCards = document.querySelectorAll('.template-card');
+                                
+                                templateCards.forEach(card => {
+                                    card.addEventListener('click', function() {
+                                        continueBtn.disabled = false;
+                                    });
+                                });
+                                
+                                continueBtn.addEventListener('click', function() {
+                                    // Cette logique sera gérée par le JavaScript spécifique à l'étape 1
+                                    const selectedTemplate = document.querySelector('.template-card.selected');
+                                    if (selectedTemplate) {
+                                        // Ouvrir la modal pour le nom du site
+                                        const modal = new bootstrap.Modal(document.getElementById('siteNameModal'));
+                                        modal.show();
+                                    }
+                                });
+                            });
+                        </script>
+                        {% endif %}
+                    {% else %}
+                        <button class="btn btn-success" id="publish-site">
+                            <i class="bi bi-rocket me-2"></i>Publier le site
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/builder.css') }}" rel="stylesheet">
+<style>
+.wizard-progress .step-icon {
+    transition: all 0.3s ease;
+}
+.progress-bar {
+    transition: width 0.5s ease;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/builder.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends "sites/template_base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section id="home" class="hero-section py-5">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">{{ site_data.hero_title or "Bienvenue sur mon site" }}</h1>
+                <p class="lead mb-4">{{ site_data.hero_subtitle or "Je crée des sites web modernes et responsives" }}</p>
+                <a href="#contact" class="btn btn-light btn-lg fw-bold">
+                    {{ site_data.hero_button or "Me contacter" }}
+                </a>
+            </div>
+            <div class="col-lg-6 text-center">
+                {% if site_data.hero_image %}
+                <img src="{{ site_data.hero_image }}" alt="Hero Image" class="img-fluid rounded shadow">
+                {% else %}
+                <div class="placeholder-hero bg-light bg-opacity-25 rounded d-flex align-items-center justify-content-center" style="height: 400px;">
+                    <i class="bi bi-image text-light fs-1"></i>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="py-5 bg-light">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                {% if site_data.about_image %}
+                <img src="{{ site_data.about_image }}" alt="About Image" class="img-fluid rounded shadow">
+                {% else %}
+                <div class="placeholder-about bg-white rounded d-flex align-items-center justify-content-center" style="height: 400px;">
+                    <i class="bi bi-person-square text-muted fs-1"></i>
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-lg-6">
+                <h2 class="fw-bold mb-4">{{ site_data.about_title or "À propos de moi" }}</h2>
+                <p class="mb-4">{{ site_data.about_description or "Je suis passionné par la création de sites web modernes et fonctionnels. Avec plusieurs années d'expérience, je mets mes compétences à votre service." }}</p>
+                
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <strong>Nom:</strong>
+                        <p class="mb-0">{{ site_data.about_name or "Votre nom" }}</p>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <strong>Poste:</strong>
+                        <p class="mb-0">{{ site_data.about_position or "Développeur Web" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section id="services" class="py-5">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">{{ site_data.services_title or "Mes Services" }}</h2>
+            <p class="lead text-muted">Découvrez ce que je peux faire pour vous</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="service-card text-center p-4 border rounded h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-{{ site_data.service1_icon or 'code-slash' }} fs-1"></i>
+                    </div>
+                    <h5>{{ site_data.service1_title or "Développement Web" }}</h5>
+                    <p class="text-muted">{{ site_data.service1_description or "Création de sites web sur mesure avec les dernières technologies" }}</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="service-card text-center p-4 border rounded h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-{{ site_data.service2_icon or 'palette' }} fs-1"></i>
+                    </div>
+                    <h5>{{ site_data.service2_title or "Design Graphique" }}</h5>
+                    <p class="text-muted">{{ site_data.service2_description or "Conception d'interfaces utilisateur modernes et intuitives" }}</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="service-card text-center p-4 border rounded h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-{{ site_data.service3_icon or 'phone' }} fs-1"></i>
+                    </div>
+                    <h5>{{ site_data.service3_title or "Applications Mobile" }}</h5>
+                    <p class="text-muted">{{ site_data.service3_description or "Développement d'applications mobiles cross-platform" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="py-5 bg-light">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">{{ site_data.contact_title or "Contactez-moi" }}</h2>
+            <p class="lead text-muted">N'hésitez pas à me contacter pour discuter de votre projet</p>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="row g-4">
+                    <div class="col-md-4 text-center">
+                        <div class="contact-info">
+                            <i class="bi bi-envelope fs-2 text-primary mb-3"></i>
+                            <h6>Email</h6>
+                            <p class="text-muted">{{ site_data.contact_email or "contact@example.com" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 text-center">
+                        <div class="contact-info">
+                            <i class="bi bi-telephone fs-2 text-primary mb-3"></i>
+                            <h6>Téléphone</h6>
+                            <p class="text-muted">{{ site_data.contact_phone or "+33 1 23 45 67 89" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 text-center">
+                        <div class="contact-info">
+                            <i class="bi bi-geo-alt fs-2 text-primary mb-3"></i>
+                            <h6>Adresse</h6>
+                            <p class="text-muted">{{ site_data.contact_address or "123 Rue Example, 75000 Paris" }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-5">
+                    <form class="contact-form">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" placeholder="Votre nom" required>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="email" class="form-control" placeholder="Votre email" required>
+                            </div>
+                            <div class="col-12">
+                                <input type="text" class="form-control" placeholder="Sujet" required>
+                            </div>
+                            <div class="col-12">
+                                <textarea class="form-control" rows="5" placeholder="Votre message" required></textarea>
+                            </div>
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary btn-lg">Envoyer le message</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

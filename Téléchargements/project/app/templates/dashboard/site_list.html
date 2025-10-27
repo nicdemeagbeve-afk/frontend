@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Mes Sites - MiabeSite{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 fw-bold">Mes Sites Web</h1>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('builder.create_site') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Nouveau Site
+            </a>
+
+            <!-- Quick create ecommerce button -->
+            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#quickCreateModal">
+                <i class="bi bi-bag-plus me-2"></i>Créer boutique (1‑clic)
+            </button>
+        </div>
+    </div>
+    
+    {% if sites %}
+    <div class="row g-4">
+        {% for site in sites %}
+        <div class="col-xl-4 col-lg-6">
+            <div class="card site-card h-100">
+                <div class="card-header bg-white border-0 pb-0">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h5 class="card-title mb-1">{{ site.name }}</h5>
+                        <span class="badge bg-{{ 'success' if site.status == 'published' else 'warning' }}">
+                            {{ 'Publié' if site.status == 'published' else 'Brouillon' }}
+                        </span>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        <i class="bi bi-link-45deg me-1"></i>
+                        {{ site.subdomain }}.miabesite.site
+                    </p>
+                </div>
+                
+                <div class="card-body">
+                    <div class="site-preview mb-3 rounded border" style="height: 120px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <div class="h-100 d-flex align-items-center justify-content-center text-white">
+                            <i class="bi bi-globe fs-1"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="site-meta">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <small class="text-muted">Créé le</small>
+                                <div class="fw-semibold">{{ site.date_created.strftime('%d/%m/%Y') }}</div>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted">Dernière modif</small>
+                                <div class="fw-semibold">{{ site.date_updated.strftime('%d/%m/%Y') }}</div>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted">Template</small>
+                                <div class="fw-semibold">#{{ site.template_id }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-footer bg-white border-0 pt-0">
+                    <div class="btn-group w-100">
+                        <a href="{{ url_for('builder.step1_template', site_id=site.id) }}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-pencil me-1"></i>Éditer
+                        </a>
+                        {% if site.status == 'published' %}
+                        <a href="http://{{ site.subdomain }}.miabesite.site" target="_blank" class="btn btn-outline-success btn-sm">
+                            <i class="bi bi-eye me-1"></i>Voir
+                        </a>
+                        {% endif %}
+                        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                            <span class="visually-hidden">Actions</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <form method="POST" action="{{ url_for('dashboard.delete_site', site_id=site.id) }}" class="d-inline">
+                                    <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce site ? Cette action est irréversible.')">
+                                        <i class="bi bi-trash me-2"></i>Supprimer
+                                    </button>
+                                </form>
+                            </li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-copy me-2"></i>Dupliquer</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-download me-2"></i>Exporter</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <div class="empty-state">
+            <i class="bi bi-folder-x text-muted fs-1"></i>
+            <h3 class="mt-3 text-muted">Aucun site créé</h3>
+            <p class="text-muted mb-4">Commencez par créer votre premier site web professionnel</p>
+            <a href="{{ url_for('builder.create_site') }}" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-circle me-2"></i>Créer mon premier site
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.site-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.site-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+}
+
+.empty-state {
+    max-width: 400px;
+    margin: 0 auto;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Nothing fancy: the modal contains a form that posts to the quick-create endpoint
+</script>
+
+<!-- Quick Create Modal -->
+<div class="modal fade" id="quickCreateModal" tabindex="-1" aria-labelledby="quickCreateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" action="{{ url_for('builder.quick_create_ecommerce') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="quickCreateModalLabel">Créer une boutique</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="qc_site_name" class="form-label">Nom de la boutique (optionnel)</label>
+                        <input type="text" class="form-control" id="qc_site_name" name="site_name" placeholder="Ma boutique">
+                        <div class="form-text">Un sous-domaine sera généré automatiquement.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-success">Créer la boutique</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

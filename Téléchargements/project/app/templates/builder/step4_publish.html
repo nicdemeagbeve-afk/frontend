@@ -1,0 +1,156 @@
+{% extends "builder/wizard_base.html" %}
+
+{% block wizard_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 text-center py-4">
+                <div class="publish-icon bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-rocket-fill text-success fs-2"></i>
+                </div>
+                <h3 class="fw-bold">Votre site est prêt !</h3>
+                <p class="text-muted">Révisez les paramètres et publiez votre site web</p>
+            </div>
+            
+            <div class="card-body p-4">
+                <!-- Site Summary -->
+                <div class="publish-summary mb-5">
+                    <h5 class="fw-semibold mb-3">Résumé de votre site</h5>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="summary-card border rounded p-3">
+                                <h6 class="fw-semibold text-primary mb-2">
+                                    <i class="bi bi-info-circle me-2"></i>Informations générales
+                                </h6>
+                                <div class="small">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="text-muted">Nom du site:</span>
+                                        <span class="fw-semibold">{{ site.name }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="text-muted">URL:</span>
+                                        <span class="fw-semibold text-primary">{{ site.subdomain }}.localhost:5000</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-muted">Template:</span>
+                                        <span class="fw-semibold">#{{ site.template_id }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="summary-card border rounded p-3">
+                                <h6 class="fw-semibold text-primary mb-2">
+                                    <i class="bi bi-clock me-2"></i>Statistiques
+                                </h6>
+                                <div class="small">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="text-muted">Créé le:</span>
+                                        <span class="fw-semibold">{{ site.date_created.strftime('%d/%m/%Y') }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="text-muted">Dernière modification:</span>
+                                        <span class="fw-semibold">{{ site.date_updated.strftime('%d/%m/%Y') }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-muted">Statut:</span>
+                                        <span class="badge bg-{{ 'success' if site.status == 'published' else 'warning' }}">
+                                            {{ 'Publié' if site.status == 'published' else 'Brouillon' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Final Preview -->
+                <div class="final-preview mb-5">
+                    <h5 class="fw-semibold mb-3">Aperçu final</h5>
+                    
+                    <div class="preview-card border rounded">
+                        <div class="preview-header bg-light border-bottom p-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-semibold">Aperçu avant publication</span>
+                                <a href="{{ url_for('builder.step1_template', site_id=site.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil me-1"></i>Modifier
+                                </a>
+                            </div>
+                        </div>
+                        <div class="preview-content p-3" style="min-height: 200px; background: white;">
+                            <div class="text-center py-4">
+                                <div class="mb-3">
+                                    <i class="bi bi-globe text-primary fs-1"></i>
+                                </div>
+                                <h6 class="fw-semibold">{{ site.name }}</h6>
+                                <p class="text-muted small mb-0">
+                                    {{ site.subdomain }}.localhost:5000
+                                </p>
+                                <div class="mt-2">
+                                    <span class="badge bg-{{ 'success' if site.status == 'published' else 'warning' }}">
+                                        {{ 'Publié' if site.status == 'published' else 'Prêt à publier' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Publish Actions -->
+                <div class="publish-actions text-center">
+                    {% if site.status != 'published' %}
+                    <div class="row g-3 justify-content-center">
+                        <div class="col-md-6">
+                            <a href="{{ url_for('builder.site_preview', site_id=site.id) }}" target="_blank" class="btn btn-primary w-100">
+                                <i class="bi bi-eye me-2"></i>Voir l'aperçu
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <form method="POST" action="{{ url_for('builder.publish_site', site_id=site.id) }}" id="publish-form">
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="bi bi-rocket me-2"></i>Publier le site
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Votre site est publié !
+                    </div>
+                    <div class="row g-3 justify-content-center">
+                        <div class="col-md-6">
+                            <a href="{{ url_for('builder.site_preview', site_id=site.id) }}" target="_blank" class="btn btn-primary w-100">
+                                <i class="bi bi-eye me-2"></i>Voir le site
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-outline-secondary w-100">
+                                <i class="bi bi-grid me-2"></i>Tableau de bord
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const publishForm = document.getElementById('publish-form');
+    if (publishForm) {
+        publishForm.addEventListener('submit', function(e) {
+            if (!confirm('Êtes-vous sûr de vouloir publier ce site ?')) {
+                e.preventDefault();
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

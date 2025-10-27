@@ -1,0 +1,486 @@
+{% extends "builder/wizard_base.html" %}
+
+{% block wizard_content %}
+<div class="row g-4">
+    <!-- Content Editor -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0">Configuration de votre boutique</h5>
+                <p class="text-muted mb-0">Configurez les informations de votre boutique e-commerce</p>
+                <div class="mt-3 d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-fill-defaults">
+                        <i class="bi bi-chevron-bar-down me-1"></i>Remplir par défaut
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="btn-add-sample-products">
+                        <i class="bi bi-box-seam me-1"></i>Ajouter produits d'exemple
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="content-editor">
+                    <!-- Store Information -->
+                    <div class="editable-section" data-section="store">
+                        <div class="section-header d-flex justify-content-between align-items-center mb-3">
+                            <h6>Informations de la boutique</h6>
+                            <button class="btn btn-sm btn-outline-primary toggle-section">
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="section-content">
+                            <div class="mb-3">
+                                <label class="form-label">Nom de la boutique *</label>
+                                <input type="text" class="form-control editable" data-field="store_name" value="{{ site_content.store_name or site.name }}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Slogan</label>
+                                <input type="text" class="form-control editable" data-field="store_slogan" value="{{ site_content.store_slogan or 'Votre satisfaction, notre priorité' }}">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Description de la boutique</label>
+                                <textarea class="form-control editable" data-field="store_description" rows="3" placeholder="Décrivez votre boutique et vos valeurs...">{{ site_content.store_description or 'Nous proposons des produits de qualité avec un service client exceptionnel.' }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hero Section -->
+                    <div class="editable-section" data-section="hero">
+                        <div class="section-header d-flex justify-content-between align-items-center mb-3">
+                            <h6>Section Hero</h6>
+                            <button class="btn btn-sm btn-outline-primary toggle-section">
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="section-content">
+                            <div class="mb-3">
+                                <label class="form-label">Titre principal *</label>
+                                <input type="text" class="form-control editable" data-field="hero_title" value="{{ site_content.hero_title or 'Bienvenue dans notre boutique' }}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Sous-titre *</label>
+                                <textarea class="form-control editable" data-field="hero_subtitle" rows="2" required placeholder="Décrivez votre boutique en une phrase...">{{ site_content.hero_subtitle or 'Découvrez nos produits exceptionnels' }}</textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Bouton d'action</label>
+                                <input type="text" class="form-control editable" data-field="hero_button" value="{{ site_content.hero_button or 'Voir les produits' }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Products Management -->
+                    <div class="editable-section" data-section="products">
+                        <div class="section-header d-flex justify-content-between align-items-center mb-3">
+                            <h6>Gestion des produits *</h6>
+                            <button class="btn btn-sm btn-outline-primary toggle-section">
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="section-content">
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Ajoutez au moins un produit pour pouvoir publier votre boutique.
+                            </div>
+                            
+                            <div id="products-list">
+                                {% if site_content.products %}
+                                    {% for product in site_content.products %}
+                                    <div class="product-item border rounded p-3 mb-3" data-product-id="{{ product.id }}">
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <h6 class="mb-0">Produit #{{ loop.index }}</h6>
+                                            <button type="button" class="btn btn-sm btn-outline-danger remove-product">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label small">Nom du produit *</label>
+                                                <input type="text" class="form-control product-field" data-field="name" value="{{ product.name }}" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label small">Prix (€) *</label>
+                                                <input type="number" class="form-control product-field" data-field="price" step="0.01" value="{{ product.price }}" required>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label small">Description *</label>
+                                                <textarea class="form-control product-field" data-field="description" rows="2" required>{{ product.description }}</textarea>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label small">Catégorie</label>
+                                                <input type="text" class="form-control product-field" data-field="category" value="{{ product.category or 'Général' }}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label small">Image URL</label>
+                                                <input type="url" class="form-control product-field" data-field="image" value="{{ product.image or '' }}" placeholder="/static/images/product.jpg">
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input product-field" data-field="in_stock" {{ 'checked' if product.in_stock != false else '' }}>
+                                                    <label class="form-check-label small">En stock</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="text-center py-4 text-muted">
+                                        <i class="bi bi-box-seam fs-1"></i>
+                                        <p class="mt-2">Aucun produit ajouté</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <button type="button" class="btn btn-outline-primary w-100" id="add-product">
+                                <i class="bi bi-plus-circle me-2"></i>Ajouter un produit
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Store Policies -->
+                    <div class="editable-section" data-section="policies">
+                        <div class="section-header d-flex justify-content-between align-items-center mb-3">
+                            <h6>Politiques de la boutique</h6>
+                            <button class="btn btn-sm btn-outline-primary toggle-section">
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="section-content">
+                            <div class="mb-3">
+                                <label class="form-label">Méthodes de paiement</label>
+                                <select class="form-select editable" data-field="payment_methods" multiple>
+                                    <option value="Carte bancaire" {{ 'selected' if 'Carte bancaire' in (site_content.payment_methods or []) }}>Carte bancaire</option>
+                                    <option value="PayPal" {{ 'selected' if 'PayPal' in (site_content.payment_methods or []) }}>PayPal</option>
+                                    <option value="Virement" {{ 'selected' if 'Virement' in (site_content.payment_methods or []) }}>Virement bancaire</option>
+                                    <option value="Espèces" {{ 'selected' if 'Espèces' in (site_content.payment_methods or []) }}>Espèces</option>
+                                </select>
+                                <div class="form-text">Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs options</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Informations de livraison</label>
+                                <textarea class="form-control editable" data-field="shipping_info" rows="2" placeholder="Délais et frais de livraison...">{{ site_content.shipping_info or 'Livraison sous 2-3 jours ouvrés' }}</textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Politique de retour</label>
+                                <textarea class="form-control editable" data-field="return_policy" rows="2" placeholder="Conditions de retour...">{{ site_content.return_policy or "30 jours pour changer d'avis" }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="editable-section" data-section="contact">
+                        <div class="section-header d-flex justify-content-between align-items-center mb-3">
+                            <h6>Informations de contact *</h6>
+                            <button class="btn btn-sm btn-outline-primary toggle-section">
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="section-content">
+                            <div class="mb-3">
+                                <label class="form-label">Email de contact *</label>
+                                <input type="email" class="form-control editable" data-field="contact_email" value="{{ site_content.contact_email or '' }}" required placeholder="contact@votreboutique.com">
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Téléphone</label>
+                                        <input type="tel" class="form-control editable" data-field="contact_phone" value="{{ site_content.contact_phone or '' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Adresse</label>
+                                        <input type="text" class="form-control editable" data-field="contact_address" value="{{ site_content.contact_address or '' }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Preview -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0">Aperçu boutique</h5>
+                <p class="text-muted mb-0">Votre boutique e-commerce en direct</p>
+            </div>
+            <div class="card-body p-0">
+                <div class="live-preview">
+                    <div class="preview-header bg-light border-bottom p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold">Aperçu e-commerce</span>
+                            <div class="device-buttons">
+                                <button class="btn btn-sm btn-outline-secondary active" data-device="desktop">
+                                    <i class="bi bi-laptop"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" data-device="mobile">
+                                    <i class="bi bi-phone"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="preview-content" id="live-preview">
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-shop fs-1"></i>
+                            <p class="mt-2">Aperçu de la boutique en chargement...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let productCounter = {{ (site_content.products | length) if site_content.products else 0 }};
+    
+    // Toggle section visibility
+    document.querySelectorAll('.toggle-section').forEach(button => {
+        button.addEventListener('click', function() {
+            const section = this.closest('.editable-section');
+            const content = section.querySelector('.section-content');
+            const icon = this.querySelector('i');
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                icon.className = 'bi bi-chevron-down';
+            } else {
+                content.style.display = 'none';
+                icon.className = 'bi bi-chevron-right';
+            }
+        });
+    });
+
+    // Add product
+    document.getElementById('add-product').addEventListener('click', function() {
+        productCounter++;
+        const productHtml = `
+            <div class="product-item border rounded p-3 mb-3" data-product-id="${productCounter}">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h6 class="mb-0">Produit #${productCounter}</h6>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-product">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small">Nom du produit *</label>
+                        <input type="text" class="form-control product-field" data-field="name" value="Nouveau produit" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Prix (€) *</label>
+                        <input type="number" class="form-control product-field" data-field="price" step="0.01" value="19.99" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label small">Description *</label>
+                        <textarea class="form-control product-field" data-field="description" rows="2" required>Description du produit</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Catégorie</label>
+                        <input type="text" class="form-control product-field" data-field="category" value="Général">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Image URL</label>
+                        <input type="url" class="form-control product-field" data-field="image" placeholder="/static/images/product.jpg">
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input product-field" data-field="in_stock" checked>
+                            <label class="form-check-label small">En stock</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('products-list').insertAdjacentHTML('beforeend', productHtml);
+        attachProductEvents();
+        saveContent();
+    });
+
+    // Remove product
+    function attachProductEvents() {
+        document.querySelectorAll('.remove-product').forEach(button => {
+            button.addEventListener('click', function() {
+                this.closest('.product-item').remove();
+                saveContent();
+            });
+        });
+
+        document.querySelectorAll('.product-field').forEach(field => {
+            field.addEventListener('input', saveContent);
+            field.addEventListener('change', saveContent);
+        });
+    }
+
+    // Auto-save content
+    const saveContent = window.MiabeSite.debounce(() => {
+        const content = {
+            store_name: document.querySelector('[data-field="store_name"]').value,
+            store_slogan: document.querySelector('[data-field="store_slogan"]').value,
+            store_description: document.querySelector('[data-field="store_description"]').value,
+            hero_title: document.querySelector('[data-field="hero_title"]').value,
+            hero_subtitle: document.querySelector('[data-field="hero_subtitle"]').value,
+            hero_button: document.querySelector('[data-field="hero_button"]').value,
+            contact_email: document.querySelector('[data-field="contact_email"]').value,
+            contact_phone: document.querySelector('[data-field="contact_phone"]').value,
+            contact_address: document.querySelector('[data-field="contact_address"]').value,
+            shipping_info: document.querySelector('[data-field="shipping_info"]').value,
+            return_policy: document.querySelector('[data-field="return_policy"]').value,
+            payment_methods: Array.from(document.querySelector('[data-field="payment_methods"]').selectedOptions).map(opt => opt.value)
+        };
+
+        // Collect products
+        content.products = [];
+        document.querySelectorAll('.product-item').forEach(item => {
+            const product = {
+                id: parseInt(item.dataset.productId),
+                name: item.querySelector('[data-field="name"]').value,
+                price: parseFloat(item.querySelector('[data-field="price"]').value),
+                description: item.querySelector('[data-field="description"]').value,
+                category: item.querySelector('[data-field="category"]').value,
+                image: item.querySelector('[data-field="image"]').value,
+                in_stock: item.querySelector('[data-field="in_stock"]').checked
+            };
+            content.products.push(product);
+        });
+
+        // Save to server
+        fetch(`/builder/{{ site.id }}/save-content`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(content)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (typeof window.siteBuilder !== 'undefined') {
+                    window.siteBuilder.showNotification('Contenu sauvegardé', 'success');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Erreur sauvegarde:', error);
+            if (typeof window.siteBuilder !== 'undefined') {
+                window.siteBuilder.showNotification('Erreur sauvegarde', 'error');
+            }
+        });
+    }, 1000);
+
+    // Initial attachment of events
+    attachProductEvents();
+    document.querySelectorAll('.editable').forEach(element => {
+        element.addEventListener('input', saveContent);
+        element.addEventListener('change', saveContent);
+    });
+
+    // Quick helper buttons
+    const btnAddSamples = document.getElementById('btn-add-sample-products');
+    const btnFillDefaults = document.getElementById('btn-fill-defaults');
+
+    if (btnAddSamples) {
+        btnAddSamples.addEventListener('click', function() {
+            btnAddSamples.disabled = true;
+            fetch(`/builder/{{ site.id }}/add-sample-products`, { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        window.siteBuilder.showNotification(data.message || 'Produits ajoutés', 'success');
+                        setTimeout(() => location.reload(), 600);
+                    } else {
+                        window.siteBuilder.showNotification(data.error || 'Erreur', 'error');
+                        btnAddSamples.disabled = false;
+                    }
+                }).catch(err => {
+                    console.error(err);
+                    window.siteBuilder.showNotification('Erreur réseau', 'error');
+                    btnAddSamples.disabled = false;
+                });
+        });
+    }
+
+    if (btnFillDefaults) {
+        btnFillDefaults.addEventListener('click', function() {
+            if (!confirm('Remplir la boutique avec des valeurs par défaut (les contenus existants seront remplacés) ?')) return;
+            btnFillDefaults.disabled = true;
+            fetch(`/builder/{{ site.id }}/fill-defaults`, { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        window.siteBuilder.showNotification(data.message || 'Valeurs par défaut appliquées', 'success');
+                        setTimeout(() => location.reload(), 600);
+                    } else {
+                        window.siteBuilder.showNotification(data.error || 'Erreur', 'error');
+                        btnFillDefaults.disabled = false;
+                    }
+                }).catch(err => {
+                    console.error(err);
+                    window.siteBuilder.showNotification('Erreur réseau', 'error');
+                    btnFillDefaults.disabled = false;
+                });
+        });
+    }
+
+    // Device preview switcher
+    document.querySelectorAll('[data-device]').forEach(button => {
+        button.addEventListener('click', function() {
+            const device = this.dataset.device;
+            const preview = document.getElementById('live-preview');
+            
+            document.querySelectorAll('[data-device]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            this.classList.add('active');
+            
+            if (device === 'mobile') {
+                preview.style.maxWidth = '375px';
+                preview.style.margin = '0 auto';
+            } else {
+                preview.style.maxWidth = '100%';
+                preview.style.margin = '0';
+            }
+        });
+    });
+});
+</script>
+
+<style>
+.product-item {
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+.product-item:hover {
+    background: #e9ecef;
+}
+.editable-section {
+    margin-bottom: 1.5rem;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+}
+.section-header {
+    cursor: pointer;
+}
+</style>
+{% endblock %}
