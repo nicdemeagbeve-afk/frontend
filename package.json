@@ -1,0 +1,23 @@
+{
+    "name": "box-ai-frontend",
+    "version": "1.0.0",
+    "description": "Frontend for the WhatsApp Bot with AI integration (GPT/Gemini)",
+    "main": "public/index.html",
+    "scripts": {
+        "start": "live-server public",
+        "build": "echo 'Build process not defined'",
+        "test": "echo 'No tests defined'"
+    },
+    "keywords": [
+        "whatsapp",
+        "frontend",
+        "ai",
+        "bot"
+    ],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {},
+    "devDependencies": {
+        "live-server": "^1.2.1"
+    }
+}
